@@ -3,7 +3,7 @@
 # desktop_file
 
 %define install_dir /opt/visualvm
-%define apps_dir /usr/local/share/applications
+%define apps_dir /usr/share/applications
 
 # Disable brp-java-repack-jars which is really slow, and not useful for VisualVM.
 %define __jar_repack 0
