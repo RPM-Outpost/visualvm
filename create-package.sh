@@ -14,6 +14,21 @@ downloaded_dir="$work_dir/visualvm_139"
 release_version='1.3.9'
 release_url='https://github.com/visualvm/visualvm.src/releases/download/1.3.9/visualvm_139.zip'
 
+# Checks that rpmbuild is installed
+if ! type 'rpmbuild' > /dev/null
+then
+	echo "You need the rpm development tools to create rpm packages"
+	read -p "Do you want to install rpmdevtools now? This will run sudo dnf install rpmdevtools. [y/N]" answer
+	case $answer in
+		[Yy]* ) sudo dnf install rpmdevtools;;
+		* ) 
+			echo "Ok, I won't install rpmdevtools."
+			exit
+		;;
+	esac
+else
+	echo "rpmbuild detected!"
+fi
 
 # Download the visualvm tar.gz archive and puts its name in the global variable archive_name.
 function download_visualvm {
