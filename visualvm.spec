@@ -10,7 +10,7 @@
 
 Name:		visualvm
 Version:	1.3.9
-Release:	github%{?dist}
+Release:	github.0%{?dist}
 Summary:	All-in-One Java Troubleshooting Tool
 
 Group:		Development/Tools
