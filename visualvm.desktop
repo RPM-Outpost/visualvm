@@ -1,0 +1,9 @@
+[Desktop Entry]
+Version=1.3.9
+Type=Application
+Name=VisualVM
+Icon=/opt/visualvm/visualvm-logo.png
+Exec=/opt/visualvm/bin/visualvm
+Comment=All-in-One Java Troubleshooting Tool
+Categories=Development;
+Terminal=false
