@@ -15,66 +15,70 @@ release_version='1.3.9'
 release_url='https://github.com/visualvm/visualvm.src/releases/download/1.3.9/visualvm_139.zip'
 
 # Checks that rpmbuild is installed
-if ! type 'rpmbuild' > /dev/null
-then
-	echo "You need the rpm development tools to create rpm packages"
-	read -p "Do you want to install rpmdevtools now? This will run sudo dnf install rpmdevtools. [y/N]" answer
-	case $answer in
-		[Yy]* ) sudo dnf install rpmdevtools;;
-		* ) 
+if ! type 'rpmbuild' > /dev/null; then
+	echo 'You need the rpm development tools to create rpm packages.'
+	read -n 1 -p 'Do you want to install the rpmdevtools package now? [y/N]' answer
+	echo
+	case "$answer" in
+		y|Y)
+			sudo -p 'Enter your password to install rpmdevtools: ' dnf install rpmdevtools
+			;;
+		*) 
 			echo "Ok, I won't install rpmdevtools."
 			exit
-		;;
 	esac
 else
 	echo "rpmbuild detected!"
 fi
 
 # Download the visualvm tar.gz archive and puts its name in the global variable archive_name.
-function download_visualvm {
+download_visualvm() {
 	echo 'Downloading VisualVM for linux...'
-	wget -q --show-progress $release_url
+	wget -q --show-progress "$release_url"
 	archive_name='visualvm_139.zip'
 }
 
-# Asks the user if he/she wants to remove the specified directory, and removes it if he wants to.
-function ask_remove_dir {
-	read -p "Do you want to remove the \"$1\" directory? [y/N]" answer
-	case $answer in
-		[Yy]* )
+# Asks the user if they want to remove the specified directory, and removes it if they want to.
+ask_remove_dir() {
+	read -n 1 -p "Do you want to remove the \"$1\" directory? [y/N]" answer
+	echo
+	case "$answer" in
+		y|Y)
 			rm -r "$1"
 			echo "\"$1\" directory removed."		
 			;;
-		* ) echo "Ok, I won't remove it." ;;
+		*)
+			echo "Ok, I won't remove it."
 	esac
 }
 
-# If the specified directory exists, asks the user if he/she wants to remove it.
+# If the specified directory exists, asks the user if they want to remove it.
 # If it doesn't exist, creates it.
-function manage_dir {
+manage_dir() {
 	if [ -d "$1" ]; then
 		echo "The $2 directory already exist. It may contain outdated things."
 		ask_remove_dir "$1"
 	fi
-	mkdir -p "$work_dir"
+	mkdir -p "$1"
 }
 
-manage_dir "$work_dir" 'work'
-manage_dir "$rpm_dir" 'RPMs'
+manage_dir "$work_dir"
+manage_dir "$rpm_dir"
 cd "$work_dir"
 
 # Download visualvm if needed
-archive_name=$(ls *.zip)
+archive_name="$(ls *.zip 2>/dev/null)"
 if [ $? -eq 0 ]; then
 	echo "Found $archive_name"
-	read -p 'Do you want to use this archive instead of downloading a new one? [y/N]' answer
-	case $answer in
-		[Yy]* )
-			echo 'Ok, I will use this this archive.'
+	read -n 1 -p 'Do you want to use this archive instead of downloading a new one? [y/N]' answer
+	echo
+	case "$answer" in
+		y|Y)
+			echo 'Ok, I will use this archive.'
 			;;
-		* )
-			download_visualvm
-			;;
+		*)
+			rm "$archive_name"
+			download_discord
 	esac
 else
 	download_visualvm
@@ -88,7 +92,8 @@ unzip -q "$archive_name" -d "$work_dir"
 echo 'Creating the RPM package...'
 cp "$icon_file" "$downloaded_dir"
 cp "$desktop_file" "$work_dir/"
-rpmbuild -bb $spec_file --quiet --define "_topdir $work_dir" --define "_rpmdir $rpm_dir" --define "downloaded_dir $downloaded_dir" --define "desktop_file $desktop_file"
+rpmbuild -bb --quiet "$spec_file" --define "_topdir $work_dir" --define "_rpmdir $rpm_dir"\
+	--define "downloaded_dir $downloaded_dir" --define "desktop_file $desktop_file"
 
 echo '-----------'
 echo 'Done!'
