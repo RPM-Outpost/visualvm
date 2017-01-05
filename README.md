@@ -24,4 +24,5 @@ It has to be updated everytime a new version of VisualVM is released.
 ## Supported distributions
 - Fedora 24
 - Fedora 25
+
 It probably work on other RPM-based distros but I haven't tested it. Let me know if it works for you!
