@@ -14,7 +14,22 @@ downloaded_dir="$work_dir/visualvm_139"
 release_version='1.3.9'
 release_url='https://github.com/visualvm/visualvm.src/releases/download/1.3.9/visualvm_139.zip'
 
-# Checks that rpmbuild is installed
+# It's a bad idea to run rpmbuild as root!
+if [ "$(id -u)" = "0" ]; then
+	echo '------------------------ WARNING ------------------------'
+	echo 'This script should NOT be executed with root privileges!'
+	echo 'Building rpm packages as root is dangerous and may harm the system!'
+	echo 'Actually, badly written RPM spec files may execute dangerous command in the system directories.'
+	echo 'So it is REALLY safer not to run this script as root.'
+	echo 'If you still want to run this script as root, type "do it!" within 5 seconds (type anything else to exit):'
+	read -t 5 -p 'Do you really want to do it (not recommended)? ' answer
+	if [ "$answer" != "do it!" ]; then
+		exit
+	fi
+	echo '------------------------ WARNING ------------------------'
+fi
+
+# Checks that rpmbuild is installed.
 if ! type 'rpmbuild' > /dev/null; then
 	echo 'You need the rpm development tools to create rpm packages.'
 	read -n 1 -p 'Do you want to install the rpmdevtools package now? [y/N]' answer
@@ -50,13 +65,14 @@ ask_remove_dir() {
 		*)
 			echo "Ok, I won't remove it."
 	esac
+	echo
 }
 
 # If the specified directory exists, asks the user if they want to remove it.
 # If it doesn't exist, creates it.
 manage_dir() {
 	if [ -d "$1" ]; then
-		echo "The $2 directory already exist. It may contain outdated things."
+		echo "The $2 directory already exist. It may contain outdated data."
 		ask_remove_dir "$1"
 	fi
 	mkdir -p "$1"
@@ -66,7 +82,7 @@ manage_dir "$work_dir"
 manage_dir "$rpm_dir"
 cd "$work_dir"
 
-# Download visualvm if needed
+# Downloads visualvm if needed.
 archive_name="$(ls *.zip 2>/dev/null)"
 if [ $? -eq 0 ]; then
 	echo "Found $archive_name"
@@ -84,20 +100,19 @@ else
 	download_visualvm
 fi
 
-# Extracts the archive
+
+echo
 echo 'Extracting the files...'
 unzip -q "$archive_name" -d "$work_dir"
 
-# Chooses the spec file based on the system's architecture and build the packages
-echo 'Creating the RPM package...'
+
+echo 'Creating the RPM package (this may take a while)...'
 cp "$icon_file" "$downloaded_dir"
 cp "$desktop_file" "$work_dir/"
 rpmbuild -bb --quiet "$spec_file" --define "_topdir $work_dir" --define "_rpmdir $rpm_dir"\
 	--define "downloaded_dir $downloaded_dir" --define "desktop_file $desktop_file"
 
-echo '-----------'
-echo 'Done!'
+echo
+echo '------------------------- Done! -------------------------'
 echo "The RPM package is located in the \"RPMs/x86_64\" folder."
-
-# Removes the work directory if the user wants to
 ask_remove_dir "$work_dir"
