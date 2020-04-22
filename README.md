@@ -10,14 +10,14 @@ Open a terminal in the repo directory and run `./create-package.sh`
 ## How to update
 When a new version of visualvm is released:
 
-1. Download the updated script from github.
+1. Download the updated script from github (pull this repository).
 2. Run the script to get the updated version.
 
 ## More informations
 
 ### Supported distributions
-- Fedora 25
-- Fedora 26
+- Fedora 30
+- Fedora 31
 
 It may work on other RPM-based distributions but I haven't tested it.
 

@@ -9,7 +9,7 @@
 %define __jar_repack 0
 
 Name:		visualvm
-Version:	1.3.9
+Version:	2.0.1
 Release:	github.0%{?dist}
 Summary:	All-in-One Java Troubleshooting Tool
 
@@ -18,10 +18,6 @@ License:	GPLv2
 URL:		https://visualvm.github.io/index.html
 BuildArch:	x86_64
 Requires:   java
-
-# Disable automatic dependency processing, so that the rpm package only
-# provides xmind, and not crazy OSGI stuff.
-AutoReqProv: no
 
 %description
 VisualVM is a visual tool integrating commandline JDK tools and lightweight profiling capabilities.

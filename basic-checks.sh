@@ -1,4 +1,7 @@
 #!/bin/bash
+# Author: TheElectronWill
+# Made for https://github.com/RPM-Outpost
+# This script requires terminal-colors.sh and common-functions.sh
 
 # It's a bad idea to run rpmbuild as root!
 if [ "$(id -u)" = "0" ]; then
@@ -20,17 +23,17 @@ fi
 if ! type 'rpmbuild' > /dev/null; then
 	echo 'You need the rpm development tools to create rpm packages.'
 	style $bold
-	read -n 1 -p '> Install the rpmdevtools package now? [y/N]: ' answer
+	read -n 1 -p '> Install the required package (rpm-build) now? [y/N]: ' answer
 	echo
+	style $reset
 	case "$answer" in
 		y|Y)
-			sudo -p 'Enter your password to install rpmdevtools: ' dnf install rpmdevtools
+			sudo_install_prompt 'Enter your password to install rpm-build: ' rpm-build
 			;;
 		*) 
-			echo "${reset}The package won't be installed. Exiting now."
+			echo "The package won't be installed. Exiting now."
 			exit
 	esac
-	style $reset
 else
 	disp "${green}rpmbuild detected.$reset"
 fi
