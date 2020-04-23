@@ -7,6 +7,7 @@
 
 # Disable brp-java-repack-jars which is really slow, and not useful for VisualVM.
 %define __jar_repack 0
+%define _build_id_links none
 
 Name:		visualvm
 Version:	2.0.1
